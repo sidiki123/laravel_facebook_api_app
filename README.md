@@ -27,7 +27,7 @@ Ajouter ces variables d'environnement si elles sont inexistantes
 
     
 ## configuration compte Meta developpers
-Se rendre sur l'adresse https://developers.facebook.com/apps et créer une nouvelle application
+Se rendre à l'adresse https://developers.facebook.com/apps et créer une nouvelle application
 
 ![App Screenshot](https://raw.githubusercontent.com/sidiki123/laravel_facebook_api_app/master/public/captures/1.png)
   
