@@ -13,10 +13,9 @@ class PageController extends Controller
     }
 
     public function home() {
-        return view('pages.dashboard.index');
+        $publications = Publication::where('status','published')->orderBy('created_at','desc')->get();
+
+        return view('pages.dashboard.index',compact('publications'));
     }
 
-    public function publications() {
-        $publications = Publication::orderBy('created_at','desc')->get();
-    }
 }

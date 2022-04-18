@@ -7,6 +7,3 @@
 <script src="{{ asset('js/jquery-3.5.1.js')}}"></script>
 <script src="{{ asset('js/jqueryDataTable.min.js')}}"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
-
-{{-- <script src="{{ asset('assets.startbootstrap.com/js/sb-customizer.js') }}"></script> --}}
-{{-- <sb-customizer project="sb-admin-pro"></sb-customizer> --}}

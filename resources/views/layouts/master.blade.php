@@ -1,19 +1,18 @@
 <!DOCTYPE html>
 <html lang="fr">
-<head>
+    <head>
         @include('partials.meta')
         @yield('title')
         <title>Gestion de stock</title>
         @yield('style')
         @include('partials.style')
-        {{--@notifyCss--}}
         <style>
             .inset-0 {
             z-index: 999999999 !important;
             }
         </style>
+    </head>
     <body class="nav-fixed">
-        {{--<x:notify-messages />--}}
         @include('partials.header')
         <div id="layoutSidenav_content">
 
@@ -24,7 +23,5 @@
         </div>
         @include('partials.script')
         @yield('script')
-        {{--@notifyJs--}}
-</body>
-
+    </body>
 </html>

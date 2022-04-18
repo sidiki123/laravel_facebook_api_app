@@ -27,7 +27,8 @@ Route::get('/dashboard', function () {
 Route::middleware('auth')->group(function () {
     Route::get('/', [PageController::class,'home'])->name('home');
     Route::resource('facebook/profil/informations', FacebookUserController::class);
-    Route::resource('publication', PublicationController::class);
+    Route::resource('publication', PublicationController::class)->middleware('RedirectIfFacebbokTokenIsEmpty');;
+    Route::post('publishedPost', [PublicationController::class, 'publishedPost'])->name('publishedPost');
 });
 
 Route::get('/facebook/handle', [FacebookUserController::class,'handleFacebook'])->name('handleFacebook');

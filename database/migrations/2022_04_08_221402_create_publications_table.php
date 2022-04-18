@@ -21,7 +21,7 @@ class CreatePublicationsTable extends Migration
             $table->string('type_de_fichier')->nullable();
             $table->string('facebook_id')->nullable();
             $table->string('facebook_post_id')->nullable();
-            $table->enum('status', ['published', 'waiting'])->nullable()->default('published');
+            $table->enum('status', ['published', 'waiting'])->nullable()->default('waiting');
             $table->timestamps();
         });
     }

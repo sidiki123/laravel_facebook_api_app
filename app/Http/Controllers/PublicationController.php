@@ -53,7 +53,7 @@ class PublicationController extends Controller
      */
     public function index()
     {
-        $publications = Publication::all();
+        $publications = Publication::orderBy('created_at','desc')->get();
         return view('pages.publications.index',compact('publications'));
     }
 
@@ -79,13 +79,37 @@ class PublicationController extends Controller
      */
     public function store(Request $request)
     {
+        $request->validate([
+            'titre' => 'required',
+            'message' => 'required',
+            'media' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:8000',
+        ]);
+  
+        $input = $request->all();
+  
+        if ($media = $request->file('media')) {
+            $destinationPath = 'media/';
+            $Image = date('YmdHis') . "." . $media->getClientOriginalExtension();
+            $media->move($destinationPath, $Image);
+            $input['media'] = "$Image";
+            $input['type_de_fichier'] = $media->getClientOriginalExtension();
+        }
+    
+        Publication::create($input);
+     
+        return redirect()->route('publication.index')
+                        ->with('success','Post créé avec succès.');
+    }
+
+    public function publishedPost(Request $request)
+    {
         $page_id = Auth::user()->facebook_page_id ?? '';
         try {
             if ($page_id && Auth::user()->token) {
-                $id = $request->id;
+                $id = $request['id'];
                 $data = Publication::find($id);
 
-                if (in_array($data->type_de_fichier, ['mp4','avi','mkv','png'])) {
+                if (in_array($data->type_de_fichier, ['mp4','avi','mkv'])) {
                     $type1 = 'video';
                     $type2 = 'description';
                 } else {
@@ -96,16 +120,17 @@ class PublicationController extends Controller
                     $post = $this->api->post('/'. $data->facebook_post_id, [$type2 => $data->message], $this->getPageAccessToken($page_id));
                 }
                 else {
-                    $post = $this->api->post('/'. $page_id . '/'. $type1, array($type2 = $data->message,'source' => $this->api->fileToUpload(public_path('media/'.$data->media))), $this->getPageAccessToken($page_id));
+                    $post = $this->api->post('/'. $page_id . '/'. $type1, array($type2 => $data->message,'source' => $this->api->fileToUpload(public_path('media/'.$data->media))), $this->getPageAccessToken($page_id));
                 }
                 $post = $post->getGraphNode()->asArray();
                 if (empty($data->facebook_post_id)) {
                     if ($post) {
                         $data->facebook_post_id = $post['post_id']??$post['id'];
                         $data->facebook_id = $post['id'];
+                        $data->status = 'published';
                         $data->save();
                         $status_code = 200;
-                        $msg = 'Post Facebbok créé avec succès';
+                        $msg = 'Post Facebook créé avec succès';
                     } else {
                         $status_code = 400;
                         $msg = 'Post Facebook non publié';
@@ -121,9 +146,9 @@ class PublicationController extends Controller
                 }
             } else {
                 if (empty(Auth::user()->token)) {
-                    $msg = 'Veuiller générez le token Facebook. > Ici <a href=""'.url("/facebook/profil/informations").'">Profil</a>.';
+                    $msg = 'Veuiller générez le token Facebook. > Ici <a href="'.url("/facebook/profil/informations").'">Profil</a>.';
                 } else {
-                    $msg = 'Veuiller ajouter id de la page Facebook. > Ici <a href=""'.url("/facebook/profil/informations").'">Profil</a>.';
+                    $msg = 'Veuiller ajouter id de la page Facebook. > Ici <a href="'.url("/facebook/profil/informations").'">Profil</a>.';
                 }
                 $status_code = 400;
             }
@@ -164,9 +189,9 @@ class PublicationController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Publication $publication)
     {
-        //
+        return view('pages.publications.edit',compact('publication'));
     }
 
     /**
@@ -176,9 +201,29 @@ class PublicationController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Publication $publication)
     {
-        //
+        $request->validate([
+            'titre' => 'required',
+            'message' => 'required',
+            // 'media' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        ]);
+  
+        $input = $request->all();
+  
+        if ($media = $request->file('media')) {
+            $destinationPath = 'media/';
+            $Image = date('YmdHis') . "." . $media->getClientOriginalExtension();
+            $media->move($destinationPath, $Image);
+            $input['media'] = "$Image";
+        }else{
+            unset($input['media']);
+        }
+          
+        $publication->update($input);
+    
+        return redirect()->route('publication.index')
+                        ->with('success','Post modifié avec succès.');
     }
 
     /**
@@ -187,8 +232,10 @@ class PublicationController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Publication $publication)
     {
-        //
+        $publication->delete();
+        return redirect()->back()
+                        ->with('success','Post supprimé avec succès.');
     }
 }
