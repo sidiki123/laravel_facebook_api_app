@@ -1,6 +1,6 @@
 # Laravel Facebook API Application
 
-Ceci est une application qui vous permettra de publier des articles, directemement sur vos pages Facebook
+Ceci est une application qui vous permettra de publier des articles, directement sur vos pages Facebook
 
 
 
